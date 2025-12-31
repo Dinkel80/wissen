@@ -1,0 +1,111 @@
+﻿<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+<link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/1067/1067357.png">
+<link rel="icon" href="https://cdn-icons-png.flaticon.com/512/1067/1067357.png">
+
+
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-capable" content="yes">
+
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BrainSnack Pro</title>
+    <style>
+        :root {
+            --primary: #6366f1;
+            --bg: #f8fafc;
+            --text: #1e293b;
+        }
+        body { font-family: 'Segoe UI', Roboto, sans-serif; background: var(--bg); display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 20px; }
+        .card { background: white; width: 100%; max-width: 400px; padding: 30px; border-radius: 24px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); text-align: center; transition: all 0.3s ease; }
+        .tag { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: bold; text-transform: uppercase; margin-bottom: 15px; }
+        .tag-fakt { background: #dbeafe; color: #1e40af; }
+        .tag-zitat { background: #fef3c7; color: #92400e; }
+        .tag-wiki { background: #dcfce7; color: #166534; }
+        h2 { font-size: 1.4rem; color: var(--text); margin: 0 0 15px 0; line-height: 1.4; }
+        #content { font-size: 1.05rem; color: #64748b; line-height: 1.6; margin-bottom: 30px; min-height: 120px; }
+        button { background: var(--primary); color: white; border: none; width: 100%; padding: 15px; border-radius: 12px; font-size: 1rem; font-weight: 600; cursor: pointer; box-shadow: 0 4px 6px -1px rgba(99, 102, 241, 0.4); }
+        button:active { transform: scale(0.98); }
+        .loader { border: 3px solid #f3f3f3; border-top: 3px solid var(--primary); border-radius: 50%; width: 24px; height: 24px; animation: spin 1s linear infinite; display: none; margin: 0 auto; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+
+
+<div class="card">
+    <div id="badge" class="tag tag-fakt">Bereit?</div>
+    <h2 id="title">Dein täglicher Wissens-Mix</h2>
+    <div id="content">Nimm dir 3 Minuten Zeit für etwas Neues.</div>
+    <div id="loader" class="loader"></div>
+    <button id="nextBtn" onclick="fetchMagic()">Wissen entdecken</button>
+</div>
+
+
+<script>
+    async function translate(text) {
+        try {
+            const res = await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=en|de`);
+            const data = await res.json();
+            return data.responseData.translatedText;
+        } catch { return text; }
+    }
+
+
+    async function fetchMagic() {
+        const content = document.getElementById('content');
+        const badge = document.getElementById('badge');
+        const title = document.getElementById('title');
+        const loader = document.getElementById('loader');
+        const btn = document.getElementById('nextBtn');
+
+
+        content.style.opacity = '0';
+        loader.style.display = 'block';
+        btn.disabled = true;
+
+
+        // Zufällige Auswahl der Kategorie
+        const mode = Math.floor(Math.random() * 3);
+
+
+        try {
+            if (mode === 0) { // Zufälliger Fakt
+                const res = await fetch('https://uselessfacts.jsph.pl/api/v2/facts/random');
+                const data = await res.json();
+                badge.innerText = "Kurioses Wissen";
+                badge.className = "tag tag-fakt";
+                title.innerText = "Wusstest du das?";
+                content.innerText = await translate(data.text);
+            } 
+            else if (mode === 1) { // Zitat
+                const res = await fetch('https://api.quotable.io/random');
+                const data = await res.json();
+                badge.innerText = "Inspiration";
+                badge.className = "tag tag-zitat";
+                title.innerText = data.author;
+                content.innerText = await translate(data.content);
+            }
+            else { // Wikipedia Zufalls-Artikel
+                const res = await fetch('https://de.wikipedia.org/api/rest_v1/page/random/summary');
+                const data = await res.json();
+                badge.innerText = "Allgemeinwissen";
+                badge.className = "tag tag-wiki";
+                title.innerText = data.title;
+                content.innerText = data.extract;
+            }
+        } catch (e) {
+            content.innerText = "Fehler beim Laden. Bitte probier es nochmal!";
+        } finally {
+            loader.style.display = 'none';
+            content.style.opacity = '1';
+            btn.disabled = false;
+        }
+    }
+</script>
+
+
+</body>
+</html>
