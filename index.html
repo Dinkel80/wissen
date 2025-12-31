@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BrainSnack Pro</title>
+    <title>BrainSnack Pro - Tech Edition</title>
     
     <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/2991/2991231.png">
     <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/2991/2991231.png">
@@ -16,19 +16,24 @@
             --primary: #6366f1;
             --bg: #f8fafc;
             --text: #1e293b;
+            --tech: #0f172a;
         }
         body { font-family: 'Segoe UI', Roboto, sans-serif; background: var(--bg); display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 20px; }
         .card { background: white; width: 100%; max-width: 400px; padding: 30px; border-radius: 24px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); text-align: center; }
+        
+        /* Tags */
         .tag { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: bold; text-transform: uppercase; margin-bottom: 15px; }
         .tag-fakt { background: #dbeafe; color: #1e40af; }
         .tag-zitat { background: #fef3c7; color: #92400e; }
         .tag-wiki { background: #dcfce7; color: #166534; }
+        .tag-tech { background: #0f172a; color: #38bdf8; } /* Spezial-Farbe für Technik */
+
         h2 { font-size: 1.4rem; color: var(--text); margin: 0 0 15px 0; line-height: 1.4; }
-        #content { font-size: 1.05rem; color: #64748b; line-height: 1.6; margin-bottom: 30px; min-height: 120px; }
+        #content { font-size: 1.05rem; color: #64748b; line-height: 1.6; margin-bottom: 30px; min-height: 120px; transition: opacity 0.3s ease; }
         
         button { border: none; width: 100%; padding: 15px; border-radius: 12px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: all 0.2s; }
         .btn-main { background: var(--primary); color: white; margin-bottom: 10px; box-shadow: 0 4px 6px -1px rgba(99, 102, 241, 0.4); }
-        .btn-share { background: #f1f5f9; color: #475569; font-size: 0.9rem; display: none; } /* Versteckt, bis Inhalt da ist */
+        .btn-share { background: #f1f5f9; color: #475569; font-size: 0.9rem; display: none; }
         
         button:active { transform: scale(0.98); }
         .loader { border: 3px solid #f3f3f3; border-top: 3px solid var(--primary); border-radius: 50%; width: 24px; height: 24px; animation: spin 1s linear infinite; display: none; margin: 20px auto; }
@@ -40,7 +45,7 @@
 <div class="card">
     <div id="badge" class="tag tag-fakt">Ready?</div>
     <h2 id="title">Wissens-Snack</h2>
-    <div id="content">Lade deinen ersten Fakt für heute!</div>
+    <div id="content">Lade deinen ersten Fakt oder Tech-News!</div>
     <div id="loader" class="loader"></div>
     
     <button class="btn-main" id="nextBtn" onclick="fetchMagic()">Wissen entdecken</button>
@@ -69,7 +74,8 @@
         btn.disabled = true;
         shareBtn.style.display = 'none';
 
-        const mode = Math.floor(Math.random() * 3);
+        // Modus-Auswahl (0: Useless Fact, 1: Tech-Witz, 2: Zitat, 3: Tech-News, 4: Wikipedia)
+        const mode = Math.floor(Math.random() * 5);
 
         try {
             if (mode === 0) {
@@ -81,12 +87,31 @@
                 content.innerText = await translate(data.text);
             } 
             else if (mode === 1) {
+                // TECH-MODUS: IT Witze & Nerd-Fakten
+                const res = await fetch('https://geek-jokes.sameerkumar.website/api?format=json');
+                const data = await res.json();
+                badge.innerText = "Tech-Corner";
+                badge.className = "tag tag-tech";
+                title.innerText = "Programmierer-Weisheit";
+                content.innerText = await translate(data.joke);
+            }
+            else if (mode === 2) {
                 const res = await fetch('https://api.quotable.io/random');
                 const data = await res.json();
                 badge.innerText = "Inspiration";
                 badge.className = "tag tag-zitat";
                 title.innerText = data.author;
                 content.innerText = await translate(data.content);
+            }
+            else if (mode === 3) {
+                // TECH-MODUS: HackerNews Trends
+                const res = await fetch('https://hn.algolia.com/api/v1/search_by_date?tags=front_page&hitsPerPage=10');
+                const data = await res.json();
+                const randomStory = data.hits[Math.floor(Math.random() * data.hits.length)];
+                badge.innerText = "Tech-News";
+                badge.className = "tag tag-tech";
+                title.innerText = "Aktueller Tech-Trend";
+                content.innerText = randomStory.title + " (Link: news.ycombinator.com)";
             }
             else {
                 const res = await fetch('https://de.wikipedia.org/api/rest_v1/page/random/summary');
@@ -96,9 +121,10 @@
                 title.innerText = data.title;
                 content.innerText = data.extract;
             }
-            shareBtn.style.display = 'block'; // Zeige Teilen-Button nach Erfolg
+            shareBtn.style.display = 'block';
         } catch (e) {
             content.innerText = "Fehler beim Laden. Bitte nochmal versuchen!";
+            console.error(e);
         } finally {
             loader.style.display = 'none';
             content.style.opacity = '1';
@@ -106,20 +132,18 @@
         }
     }
 
-    // DIE TEILEN-FUNKTION
     function shareFact() {
-        const title = document.getElementById('title').innerText;
+        const titleText = document.getElementById('title').innerText;
         const text = document.getElementById('content').innerText;
         const shareData = {
             title: 'Cooler Fakt!',
-            text: `💡 *${title}*\n\n${text}\n\n(Gesendet aus meiner Wissens-App)`,
+            text: `💡 *${titleText}*\n\n${text}\n\n(Gesendet aus meiner BrainSnack App)`,
         };
 
         if (navigator.share) {
             navigator.share(shareData);
         } else {
-            // Fallback für Browser, die kein natives Teilen unterstützen
-            alert("Kopiere den Text einfach: " + text);
+            alert("Kopiere den Text: " + text);
         }
     }
 </script>
