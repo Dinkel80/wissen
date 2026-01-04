@@ -3,49 +3,116 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BrainSnack Pro - Tech Edition</title>
+    <title>Daily BrainSnack</title>
     
     <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/2991/2991231.png">
     <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/2991/2991231.png">
-    
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
     <style>
         :root {
-            --primary: #6366f1;
+            --primary: #6366f1; 
             --bg: #f8fafc;
             --text: #1e293b;
-            --tech: #0f172a;
+            --card-bg: #ffffff;
         }
-        body { font-family: 'Segoe UI', Roboto, sans-serif; background: var(--bg); display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 20px; }
-        .card { background: white; width: 100%; max-width: 400px; padding: 30px; border-radius: 24px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); text-align: center; }
-        
-        /* Tags */
-        .tag { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: bold; text-transform: uppercase; margin-bottom: 15px; }
+
+        body { 
+            font-family: 'Segoe UI', Roboto, sans-serif; 
+            background-color: var(--bg); 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            min-height: 100vh; 
+            margin: 0; 
+            padding: 20px; 
+        }
+
+        .card { 
+            background: var(--card-bg); 
+            width: 100%; 
+            max-width: 420px; 
+            padding: 30px; 
+            border-radius: 24px; 
+            box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); 
+            text-align: center; 
+        }
+
+        .tag { 
+            display: inline-block; 
+            padding: 5px 15px; 
+            border-radius: 20px; 
+            font-size: 0.75rem; 
+            font-weight: bold; 
+            text-transform: uppercase; 
+            margin-bottom: 15px; 
+        }
+
+        /* Kategorien-Farben */
         .tag-fakt { background: #dbeafe; color: #1e40af; }
         .tag-zitat { background: #fef3c7; color: #92400e; }
         .tag-wiki { background: #dcfce7; color: #166534; }
-        .tag-tech { background: #0f172a; color: #38bdf8; } /* Spezial-Farbe für Technik */
+        .tag-tech { background: #ffedd5; color: #9a3412; }
 
-        h2 { font-size: 1.4rem; color: var(--text); margin: 0 0 15px 0; line-height: 1.4; }
-        #content { font-size: 1.05rem; color: #64748b; line-height: 1.6; margin-bottom: 30px; min-height: 120px; transition: opacity 0.3s ease; }
+        h2 { font-size: 1.5rem; color: var(--text); margin: 0 0 15px 0; line-height: 1.3; }
         
-        button { border: none; width: 100%; padding: 15px; border-radius: 12px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: all 0.2s; }
-        .btn-main { background: var(--primary); color: white; margin-bottom: 10px; box-shadow: 0 4px 6px -1px rgba(99, 102, 241, 0.4); }
-        .btn-share { background: #f1f5f9; color: #475569; font-size: 0.9rem; display: none; }
+        #content { 
+            font-size: 1.05rem; 
+            color: #475569; 
+            line-height: 1.6; 
+            margin-bottom: 30px; 
+            min-height: 120px;
+            transition: opacity 0.3s;
+        }
         
-        button:active { transform: scale(0.98); }
-        .loader { border: 3px solid #f3f3f3; border-top: 3px solid var(--primary); border-radius: 50%; width: 24px; height: 24px; animation: spin 1s linear infinite; display: none; margin: 20px auto; }
+        button { 
+            border: none; 
+            width: 100%; 
+            padding: 16px; 
+            border-radius: 14px; 
+            font-size: 1rem; 
+            font-weight: 600; 
+            cursor: pointer; 
+            transition: transform 0.1s, background 0.2s; 
+        }
+
+        .btn-main { 
+            background: var(--primary); 
+            color: white; 
+            box-shadow: 0 4px 6px -1px rgba(99, 102, 241, 0.4); 
+            margin-bottom: 12px;
+        }
+
+        .btn-share { 
+            background: #f1f5f9; 
+            color: #475569; 
+            display: none; 
+        }
+        
+        button:active { transform: scale(0.97); }
+        button:disabled { background: #cbd5e1; cursor: not-allowed; }
+
+        .loader { 
+            border: 3px solid #f3f3f3; 
+            border-top: 3px solid var(--primary); 
+            border-radius: 50%; 
+            width: 30px; 
+            height: 30px; 
+            animation: spin 1s linear infinite; 
+            display: none; 
+            margin: 20px auto; 
+        }
+
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
 
 <div class="card">
-    <div id="badge" class="tag tag-fakt">Ready?</div>
-    <h2 id="title">Wissens-Snack</h2>
-    <div id="content">Lade deinen ersten Fakt oder Tech-News!</div>
+    <div id="badge" class="tag tag-fakt">Wissen</div>
+    <h2 id="title">Dein BrainSnack</h2>
+    <div id="content">Bereit für 3-5 Minuten Bildung? Klicke auf den Button.</div>
     <div id="loader" class="loader"></div>
     
     <button class="btn-main" id="nextBtn" onclick="fetchMagic()">Wissen entdecken</button>
@@ -53,6 +120,19 @@
 </div>
 
 <script>
+    // Erweiterte Liste für allgemeinverständliche Technik-Begriffe
+    const techThemen = [
+        "Künstliche Intelligenz", "Blockchain", "Internet der Dinge", "Cloud Computing", 
+        "Virtual Reality", "Augmented Reality", "5G", "Algorithmus", "Glasfaser", 
+        "Quantencomputer", "Cybersecurity", "Big Data", "Autonomes Fahren", 
+        "Maschinelles Lernen", "Industrie 4.0", "Kryptowährung", "Smart Home", 
+        "Biometrie", "Nanotechnologie", "Erneuerbare Energien", "Halbleiter",
+        "Wasserstoffantrieb", "3D-Druck", "Kernfusion", "VPN", "Darknet",
+        "Edge Computing", "ChatGPT", "Robotik", "Satelliteninternet", "Graphen",
+        "NFC", "Li-Fi", "OLED", "Quantenkryptografie", "Smart City", "Wearable Computing",
+        "Metaverse", "Server", "Open Source", "Programmiersprache", "API"
+    ];
+
     async function translate(text) {
         try {
             const res = await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=en|de`);
@@ -70,32 +150,23 @@
         const shareBtn = document.getElementById('shareBtn');
 
         content.style.opacity = '0';
+        shareBtn.style.display = 'none';
         loader.style.display = 'block';
         btn.disabled = true;
-        shareBtn.style.display = 'none';
 
-        // Modus-Auswahl (0: Useless Fact, 1: Tech-Witz, 2: Zitat, 3: Tech-News, 4: Wikipedia)
-        const mode = Math.floor(Math.random() * 5);
+        // Auswahl aus 4 Kategorien
+        const mode = Math.floor(Math.random() * 4);
 
         try {
-            if (mode === 0) {
+            if (mode === 0) { // FAKT
                 const res = await fetch('https://uselessfacts.jsph.pl/api/v2/facts/random');
                 const data = await res.json();
-                badge.innerText = "Kurioses";
+                badge.innerText = "Kurioses Wissen";
                 badge.className = "tag tag-fakt";
-                title.innerText = "Wusstest du schon?";
+                title.innerText = "Wusstest du das?";
                 content.innerText = await translate(data.text);
             } 
-            else if (mode === 1) {
-                // TECH-MODUS: IT Witze & Nerd-Fakten
-                const res = await fetch('https://geek-jokes.sameerkumar.website/api?format=json');
-                const data = await res.json();
-                badge.innerText = "Tech-Corner";
-                badge.className = "tag tag-tech";
-                title.innerText = "Programmierer-Weisheit";
-                content.innerText = await translate(data.joke);
-            }
-            else if (mode === 2) {
+            else if (mode === 1) { // ZITAT
                 const res = await fetch('https://api.quotable.io/random');
                 const data = await res.json();
                 badge.innerText = "Inspiration";
@@ -103,17 +174,7 @@
                 title.innerText = data.author;
                 content.innerText = await translate(data.content);
             }
-            else if (mode === 3) {
-                // TECH-MODUS: HackerNews Trends
-                const res = await fetch('https://hn.algolia.com/api/v1/search_by_date?tags=front_page&hitsPerPage=10');
-                const data = await res.json();
-                const randomStory = data.hits[Math.floor(Math.random() * data.hits.length)];
-                badge.innerText = "Tech-News";
-                badge.className = "tag tag-tech";
-                title.innerText = "Aktueller Tech-Trend";
-                content.innerText = randomStory.title + " (Link: news.ycombinator.com)";
-            }
-            else {
+            else if (mode === 2) { // WIKIPEDIA ZUFALL
                 const res = await fetch('https://de.wikipedia.org/api/rest_v1/page/random/summary');
                 const data = await res.json();
                 badge.innerText = "Allgemeinwissen";
@@ -121,10 +182,19 @@
                 title.innerText = data.title;
                 content.innerText = data.extract;
             }
+            else { // TECHNIK-BEGRIFF
+                const randomTech = techThemen[Math.floor(Math.random() * techThemen.length)];
+                const res = await fetch(`https://de.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(randomTech)}`);
+                const data = await res.json();
+                badge.innerText = "Technik erklärt";
+                badge.className = "tag tag-tech";
+                title.innerText = data.title;
+                content.innerText = data.extract;
+            }
+            
             shareBtn.style.display = 'block';
         } catch (e) {
-            content.innerText = "Fehler beim Laden. Bitte nochmal versuchen!";
-            console.error(e);
+            content.innerText = "Fehler beim Laden. Bitte Internetverbindung prüfen!";
         } finally {
             loader.style.display = 'none';
             content.style.opacity = '1';
@@ -134,16 +204,13 @@
 
     function shareFact() {
         const titleText = document.getElementById('title').innerText;
-        const text = document.getElementById('content').innerText;
-        const shareData = {
-            title: 'Cooler Fakt!',
-            text: `💡 *${titleText}*\n\n${text}\n\n(Gesendet aus meiner BrainSnack App)`,
-        };
+        const factText = document.getElementById('content').innerText;
+        const shareString = `💡 *${titleText}*\n\n${factText}\n\n(Gesendet aus meiner Wissens-App)`;
 
         if (navigator.share) {
-            navigator.share(shareData);
+            navigator.share({ title: 'Tages-Wissen', text: shareString }).catch(() => {});
         } else {
-            alert("Kopiere den Text: " + text);
+            window.open(`https://wa.me/?text=${encodeURIComponent(shareString)}`, '_blank');
         }
     }
 </script>
